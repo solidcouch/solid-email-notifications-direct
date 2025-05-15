@@ -174,8 +174,11 @@ export const getBotFetch = async () => {
 /**
  * Fetch RDF document with notification bot identity, and return quads
  */
-export const fetchRdf = async (uri: string) => {
-  const authBotFetch = await getBotFetch()
+export const fetchRdf = async (
+  uri: string,
+  authFetch?: typeof globalThis.fetch,
+) => {
+  const authBotFetch = authFetch ?? (await getBotFetch())
   const { data: quads } = await fetchRdfDocument(uri, authBotFetch)
   return quads
 }
@@ -186,11 +189,13 @@ export const fetchRdf = async (uri: string) => {
 const run = async (qas: QueryAndStore) => {
   let missingResources = qas.getMissingResources()
 
+  const authFetch = await getBotFetch()
+
   while (missingResources.length > 0) {
     let quads: Quad[] = []
     const res = missingResources[0]
     try {
-      quads = await fetchRdf(missingResources[0])
+      quads = await fetchRdf(missingResources[0], authFetch)
     } catch (e) {
       // eslint-disable-next-line no-console
       console.error(e)
