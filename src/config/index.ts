@@ -1,5 +1,6 @@
+import { Constant } from '@ldhop/core'
 import 'dotenv/config'
-import SMTPTransport from 'nodemailer/lib/smtp-transport'
+import SMTPTransport from 'nodemailer/lib/smtp-transport/index.js'
 
 // the defaults work for tests. you should define your own
 // either via .env file, or via environment variables directly (depends on your setup)
@@ -26,7 +27,7 @@ export const supportEmail = process.env.SUPPORT_EMAIL ?? 'support@tired.bike'
 export const mailerCredentials = {
   email: process.env.MAILER_IDENTITY_EMAIL ?? 'bot@example',
   password: process.env.MAILER_IDENTITY_PASSWORD ?? 'password',
-  provider: process.env.MAILER_IDENTITY_PROVIDER ?? 'http://localhost:3456',
+  oidcIssuer: process.env.MAILER_IDENTITY_PROVIDER ?? 'http://localhost:3456',
   webId:
     process.env.MAILER_IDENTITY_WEBID ??
     'http://localhost:3456/bot/profile/card#me',
@@ -77,7 +78,7 @@ export const jwt = {
 }
 
 export const emailDiscoveryType =
-  process.env.EMAIL_DISCOVERY_TYPE ??
+  (process.env.EMAIL_DISCOVERY_TYPE as Constant) ??
   'http://w3id.org/hospex/ns#PersonalHospexDocument'
 
 export const verificationTokenPredicate =

@@ -1,6 +1,6 @@
 import { bodyParser } from '@koa/bodyparser'
 import cors from '@koa/cors'
-import Router from '@koa/router'
+import { Router } from '@koa/router'
 import Koa from 'koa'
 import helmet from 'koa-helmet'
 import serve from 'koa-static'
@@ -72,7 +72,7 @@ router
   )
 
 app
-  .use(helmet())
+  .use(helmet.default())
   .use(cors())
   .use(
     bodyParser({

@@ -1,6 +1,6 @@
-import { fetchRdfDocument, QueryAndStore, RdfQuery } from '@ldhop/core'
+import { fetchRdfDocument, LdhopEngine, LdhopQuery, run } from '@ldhop/core'
 import { v6, v7 } from 'css-authn'
-import { NamedNode, Quad } from 'n3'
+import { NamedNode } from 'n3'
 import { rdf, rdfs, solid, space } from 'rdf-namespaces'
 import * as config from './config/index.js'
 
@@ -13,7 +13,15 @@ import * as config from './config/index.js'
  * - Find settings in the relevant instance (webId) - space:preferencesFile -> (settings)
  * - In the settings, find (webId) - example:emailVerificationToken -> (JWT)
  */
-const findEmailQuery: RdfQuery = [
+const findEmailQuery: LdhopQuery<
+  | '?person'
+  | '?extendedDocument'
+  | '?publicTypeIndex'
+  | '?typeRegistration'
+  | '?typeRegistrationForClass'
+  | '?classDocument'
+  | '?settings'
+> = [
   // Go to person's webId and fetch extended proimage documents, too
   {
     type: 'match',
@@ -73,8 +81,9 @@ const findEmailQuery: RdfQuery = [
 export const findEmailVerificationTokens = async (webId: string) => {
   // initialize knowledge graph and follow your nose through it
   // according to the query
-  const qas = new QueryAndStore(findEmailQuery, { person: new Set([webId]) })
-  await run(qas)
+  const qas = new LdhopEngine(findEmailQuery, { '?person': new Set([webId]) })
+  const botFetch = await getBotFetch()
+  await run(qas, botFetch)
 
   // Find email verification tokens
   const objects = qas.store.getObjects(
@@ -92,11 +101,14 @@ export const findEmailVerificationTokens = async (webId: string) => {
 export const findWritableSettings = async (webId: string) => {
   // initialize knowledge graph and follow your nose through it
   // according to the query
-  const qas = new QueryAndStore(findEmailQuery, { person: new Set([webId]) })
-  await run(qas)
+  const qas = new LdhopEngine(findEmailQuery, { '?person': new Set([webId]) })
+  const botFetch = await getBotFetch()
+  await run(qas, botFetch)
 
   // get uris of settings
-  const settings = qas.getVariable('settings')
+  const settings = Array.from(qas.getVariable('?settings'))
+    .filter(t => t.termType === 'NamedNode')
+    .map(t => t.value)
 
   // find out which settings the bot can edit
   const authBotFetch = await getBotFetch()
@@ -181,27 +193,4 @@ export const fetchRdf = async (
   const authBotFetch = authFetch ?? (await getBotFetch())
   const { data: quads } = await fetchRdfDocument(uri, authBotFetch)
   return quads
-}
-
-/**
- * Follow your nose through the linked data graph by query
- */
-const run = async (qas: QueryAndStore) => {
-  let missingResources = qas.getMissingResources()
-
-  const authFetch = await getBotFetch()
-
-  while (missingResources.length > 0) {
-    let quads: Quad[] = []
-    const res = missingResources[0]
-    try {
-      quads = await fetchRdf(missingResources[0], authFetch)
-    } catch (e) {
-      // eslint-disable-next-line no-console
-      console.error(e)
-    } finally {
-      qas.addResource(res, quads)
-      missingResources = qas.getMissingResources()
-    }
-  }
 }
