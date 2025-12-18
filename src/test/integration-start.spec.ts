@@ -1,5 +1,5 @@
 import fetch from 'cross-fetch'
-import Mail from 'nodemailer/lib/mailer'
+import type { SendMailOptions } from 'nodemailer'
 import {
   afterEach,
   beforeEach,
@@ -14,7 +14,7 @@ import * as mailerService from '../services/mailerService.js'
 import { authenticatedFetch, otherAuthenticatedFetch } from './setup.js'
 
 describe('Initialize email integration via /init', () => {
-  let sendMailSpy: MockInstance<(options: Mail.Options) => Promise<void>>
+  let sendMailSpy: MockInstance<(options: SendMailOptions) => Promise<void>>
 
   beforeEach(() => {
     sendMailSpy = vi.spyOn(mailerService, 'sendMail')

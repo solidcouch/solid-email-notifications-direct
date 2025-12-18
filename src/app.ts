@@ -72,7 +72,7 @@ router
   )
 
 app
-  .use(helmet())
+  .use(helmet.default())
   .use(cors())
   .use(
     bodyParser({
