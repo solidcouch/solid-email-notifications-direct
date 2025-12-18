@@ -32,7 +32,7 @@ export const getVerifiedEmails = async (webId: string) => {
 
 export const getStatus: Middleware<
   DefaultState,
-  DefaultContext & { params: { webId: string } }
+  DefaultContext /* & { params: { webId: string } }*/
 > = async ctx => {
   const webId = ctx.params.webId
 
