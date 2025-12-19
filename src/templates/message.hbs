@@ -1,6 +1,6 @@
 <p>Hello{{#if target.name}}&nbsp;{{/if}}{{target.name}}!</p>
 <p>
-  <a href={{actor.id}}>{{#if
+  <a href='{{actor.id}}'>{{#if
       actor.name
     }}{{actor.name}}{{else}}Somebody{{/if}}</a>
   sent you a message from
@@ -10,9 +10,5 @@
 <blockquote>{{object.content}}</blockquote>
 
 <p>
-  <a
-    href='https://tired.bike/messages/{{encodeURIComponent actor.id}}'
-    class='action-button'
-  >Reply on
-    {{appName}}</a>
+  <a href='{{chatLink}}' class='action-button'>Reply on {{appName}}</a>
 </p>
