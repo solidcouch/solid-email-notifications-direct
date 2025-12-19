@@ -1,5 +1,5 @@
 import { DefaultContext, Middleware } from 'koa'
-import { appName, emailSender } from '../config/index.js'
+import { appName, appUrl, emailSender } from '../config/index.js'
 import { sendMail } from '../services/mailerService.js'
 import { generateHtmlMessage } from '../templates/generateMessage.js'
 import { getVerifiedEmails } from './status.js'
@@ -48,6 +48,10 @@ export const notification: Middleware<
       html: await generateHtmlMessage('message', {
         ...body,
         title: subject,
+        chatLink: new URL(
+          `messages?with=${encodeURIComponent(body.actor.id)}`,
+          appUrl,
+        ).toString(),
       }),
       text: body.object.content,
     })

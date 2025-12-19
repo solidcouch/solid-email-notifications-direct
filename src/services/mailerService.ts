@@ -11,7 +11,7 @@ export const sendMail = async (options: SendMailOptions) => {
       {
         filename: path.basename(appLogo),
         path: appLogo,
-        cid: 'applogo@tired.bike',
+        cid: 'applogo@solidcouch.org',
       },
       ...(options.attachments ?? []),
     ],

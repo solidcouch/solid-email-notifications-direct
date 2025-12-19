@@ -14,14 +14,15 @@ export const baseUrl =
     ? `http://localhost:${port}`
     : process.env.BASE_URL
 
-export const appName = process.env.APP_NAME ?? 'Tired.bike'
+export const appName = process.env.APP_NAME ?? 'SolidCouch'
 
-export const appUrl = process.env.APP_URL ?? 'https://tired.bike'
+export const appUrl = process.env.APP_URL ?? 'https://app.solidcouch.org'
 
-// default is tired.bike logo
+// default is SolidCouch logo
 export const appLogo = process.env.APP_LOGO ?? './logo.png'
 
-export const supportEmail = process.env.SUPPORT_EMAIL ?? 'support@tired.bike'
+export const supportEmail =
+  process.env.SUPPORT_EMAIL ?? 'support@solidcouch.org'
 
 // identity under which the mailer is operating
 export const mailerCredentials = {
@@ -56,7 +57,7 @@ export const smtpTransportOptions: SMTPTransport.Options = {
 
 // email address which will be the sender of the notifications and email verification messages
 export const emailSender =
-  process.env.EMAIL_SENDER ?? 'noreply@notifications.tired.bike'
+  process.env.EMAIL_SENDER ?? 'noreply@notifications.solidcouch.org'
 
 // email verification expiration in seconds (1 hour)
 export const emailVerificationExpiration = 3600
