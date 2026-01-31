@@ -2,6 +2,7 @@ import fetch from 'cross-fetch'
 import Mail from 'nodemailer/lib/mailer/index.js'
 import {
   afterEach,
+  assert,
   beforeEach,
   describe,
   expect,
@@ -79,7 +80,7 @@ describe('send notification via /notification', () => {
     expect(sendMailSpy.mock.calls.length).to.equal(1)
     const emailNotification = sendMailSpy.mock.calls[0][0]
 
-    expect(emailNotification).to.exist
+    assert.exists(emailNotification)
     expect(emailNotification.to).to.haveOwnProperty('address', email)
 
     // TODO

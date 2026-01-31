@@ -12,7 +12,6 @@ export const getVerifiedEmails = async (webId: string) => {
   const verifiedEmails = tokens
     .map(token => {
       try {
-        // eslint-disable-next-line import/no-named-as-default-member
         return jsonwebtoken.verify(token, pem) as {
           webId: string
           email: string

@@ -48,7 +48,7 @@ describe('email verification via /verify-email?token=jwt', () => {
     const response = await fetch(verificationLink, {
       headers: { accept: 'text/plain' },
     })
-    expect(response.ok).to.be.true
+    expect(response.ok).to.equal(true)
     const jwt = await response.text()
     const payload = jsonwebtoken.decode(jwt) as jsonwebtoken.JwtPayload
 
@@ -68,7 +68,7 @@ describe('email verification via /verify-email?token=jwt', () => {
     const response = await fetch(verificationLink, {
       headers: { accept: 'application/json' },
     })
-    expect(response.ok).to.be.true
+    expect(response.ok).to.equal(true)
     const { token: jwt } = await response.json()
 
     // after, the settings should contain triple <webId> <verification token predicate (config)> "token".
@@ -85,7 +85,7 @@ describe('email verification via /verify-email?token=jwt', () => {
     const response = await fetch(verificationLink, {
       headers: { accept: 'text/html' },
     })
-    expect(response.ok).to.be.true
+    expect(response.ok).to.equal(true)
     const body = await response.text()
     expect(response.headers.get('content-type')).to.equal('text/html')
     expect(body).to.include('Your email was successfully verified')

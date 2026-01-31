@@ -20,7 +20,7 @@ const createFile = async ({
     headers: { 'content-type': 'text/turtle' },
   })
 
-  expect(response.ok).to.be.true
+  expect(response.ok).to.equal(true)
 
   if (acl) {
     await addAcl({
@@ -81,7 +81,7 @@ const patchFile = async ({
     body: patch,
     headers: { 'content-type': 'text/n3' },
   })
-  expect(response.ok).to.be.true
+  expect(response.ok).to.equal(true)
 }
 
 /**
@@ -200,7 +200,7 @@ const addAcl = async ({
       }.`,
   })
 
-  expect(response.ok).to.be.true
+  expect(response.ok).to.equal(true)
 
   return response
 }

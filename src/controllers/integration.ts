@@ -7,7 +7,6 @@ import { sendMail } from '../services/mailerService.js'
 import { generateHtmlMessage } from '../templates/generateMessage.js'
 import { findWritableSettings, getBotFetch } from '../utils.js'
 
-// eslint-disable-next-line import/no-named-as-default-member
 const { JsonWebTokenError, TokenExpiredError, sign, verify } = jsonwebtoken
 
 export const initializeIntegration: Middleware<{

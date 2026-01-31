@@ -41,7 +41,7 @@ export const initIntegration = async ({
   expect(emailMessage).toBeDefined()
   const $ = cheerio.load(emailMessage as string)
   const verificationLink = $('a').first().attr('href')
-  expect(verificationLink).to.not.be.null
+  expect(verificationLink).to.not.equal(null)
   vi.restoreAllMocks()
 
   return { verificationLink }
@@ -49,7 +49,7 @@ export const initIntegration = async ({
 
 const finishIntegration = async (verificationLink: string) => {
   const response = await fetch(verificationLink)
-  expect(response.ok).to.be.true
+  expect(response.ok).to.equal(true)
   const jwt = await response.text()
   return { token: jwt }
 }
