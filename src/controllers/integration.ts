@@ -14,7 +14,7 @@ export const initializeIntegration: Middleware<{
   user: string
 }> = async ctx => {
   // we should receive info about webId and email address
-  const email: string = ctx.request.body.email
+  const { email } = ctx.request.body as { email: string }
   const user: string = ctx.state.user
 
   // make a jwt token that verifies email address
