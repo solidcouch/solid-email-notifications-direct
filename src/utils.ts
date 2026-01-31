@@ -1,4 +1,4 @@
-import { fetchRdfDocument, LdhopEngine, LdhopQuery, run } from '@ldhop/core'
+import { fetchRdfDocument, ldhop, LdhopEngine, run } from '@ldhop/core'
 import { v6, v7 } from 'css-authn'
 import { NamedNode } from 'n3'
 import { rdf, rdfs, solid, space } from 'rdf-namespaces'
@@ -13,67 +13,27 @@ import * as config from './config/index.js'
  * - Find settings in the relevant instance (webId) - space:preferencesFile -> (settings)
  * - In the settings, find (webId) - example:emailVerificationToken -> (JWT)
  */
-const findEmailQuery: LdhopQuery<
-  | '?person'
-  | '?extendedDocument'
-  | '?publicTypeIndex'
-  | '?typeRegistration'
-  | '?typeRegistrationForClass'
-  | '?classDocument'
-  | '?settings'
-> = [
+const findEmailQuery = ldhop('?person')
   // Go to person's webId and fetch extended proimage documents, too
-  {
-    type: 'match',
-    subject: '?person',
-    predicate: rdfs.seeAlso,
-    pick: 'object',
-    target: '?extendedDocument',
-  },
-  { type: 'add resources', variable: '?extendedDocument' },
+  .match('?person', rdfs.seeAlso)
+  .o('?extendedDocument')
+  .add()
   // Find public type index
-  {
-    type: 'match',
-    subject: '?person',
-    predicate: solid.publicTypeIndex,
-    pick: 'object',
-    target: '?publicTypeIndex',
-  },
+  .match('?person', solid.publicTypeIndex)
+  .o('?publicTypeIndex')
   // Find instances of specific class defined in config (EMAIL_DISCOVERY_TYPE)
-  {
-    type: 'match',
-    predicate: rdf.type,
-    object: solid.TypeRegistration,
-    graph: '?publicTypeIndex',
-    pick: 'subject',
-    target: '?typeRegistration',
-  },
-  {
-    type: 'match',
-    subject: '?typeRegistration',
-    predicate: solid.forClass,
-    object: config.emailDiscoveryType,
-    pick: 'subject',
-    target: '?typeRegistrationForClass',
-  },
-  {
-    type: 'match',
-    subject: '?typeRegistrationForClass',
-    predicate: solid.instance,
-    pick: 'object',
-    target: `?classDocument`,
-  },
-  { type: 'add resources', variable: '?classDocument' },
+  .match(null, rdf.type, solid.TypeRegistration, '?publicTypeIndex')
+  .s('?typeRegistration')
+  .match('?typeRegistration', solid.forClass, config.emailDiscoveryType)
+  .s('?typeRegistrationForClass')
+  .match('?typeRegistrationForClass', solid.instance)
+  .o('?classDocument')
+  .add()
   // Find settings
-  {
-    type: 'match',
-    subject: '?person',
-    predicate: space.preferencesFile,
-    pick: 'object',
-    target: '?settings',
-  },
-  { type: 'add resources', variable: '?settings' },
-]
+  .match('?person', space.preferencesFile)
+  .o('?settings')
+  .add()
+  .toArray()
 
 /**
  * Search through person's storage and find email verification token in settings
@@ -81,12 +41,12 @@ const findEmailQuery: LdhopQuery<
 export const findEmailVerificationTokens = async (webId: string) => {
   // initialize knowledge graph and follow your nose through it
   // according to the query
-  const qas = new LdhopEngine(findEmailQuery, { '?person': new Set([webId]) })
+  const engine = new LdhopEngine(findEmailQuery, { person: [webId] })
   const botFetch = await getBotFetch()
-  await run(qas, botFetch)
+  await run(engine, botFetch)
 
   // Find email verification tokens
-  const objects = qas.store.getObjects(
+  const objects = engine.store.getObjects(
     new NamedNode(webId),
     new NamedNode(config.verificationTokenPredicate),
     null,
@@ -101,12 +61,12 @@ export const findEmailVerificationTokens = async (webId: string) => {
 export const findWritableSettings = async (webId: string) => {
   // initialize knowledge graph and follow your nose through it
   // according to the query
-  const qas = new LdhopEngine(findEmailQuery, { '?person': new Set([webId]) })
+  const engine = new LdhopEngine(findEmailQuery, { person: [webId] })
   const botFetch = await getBotFetch()
-  await run(qas, botFetch)
+  await run(engine, botFetch)
 
   // get uris of settings
-  const settings = Array.from(qas.getVariable('?settings'))
+  const settings = Array.from(engine.getVariable('?settings'))
     .filter(t => t.termType === 'NamedNode')
     .map(t => t.value)
 
